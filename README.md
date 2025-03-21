@@ -1,9 +1,9 @@
-## Create & Process Gift Transaction from Person Account
 <a href="https://githubsfdeploy.herokuapp.com?owner=ashley-findock&repo=virtual-terminal-person-account&ref=main">
   <img alt="Deploy to Salesforce"
        src="https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/deploy.png">
 </a>
 
+## Create & Process Gift Transaction from Person Account
 
 ## A quick description for what this repo contains:
 
@@ -12,9 +12,9 @@ Screenflow to be used on Person Accounts that creates Gift Transaction & process
 ## Requirements
 The prerequisites to deploy this repository are:
 
-Fundraising enabled and configured in your Salesforce environment
+- Fundraising enabled and configured in your Salesforce environment
 
-FinDock for Fundraising activated along with either Stripe or Worldpay PSP connectors
+- FinDock for Fundraising activated along with either Stripe or Worldpay PSP connectors
 
 ## Installation
 
