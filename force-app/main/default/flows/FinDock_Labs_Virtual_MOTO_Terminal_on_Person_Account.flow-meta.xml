@@ -39,8 +39,14 @@
         <locationX>176</locationX>
         <locationY>242</locationY>
         <connector>
-            <targetReference>Confirm</targetReference>
+            <targetReference>takePayment</targetReference>
         </connector>
+        <inputAssignments>
+            <field>CampaignId</field>
+            <value>
+                <elementReference>lookupCampaign.recordId</elementReference>
+            </value>
+        </inputAssignments>
         <inputAssignments>
             <field>DonorId</field>
             <value>
@@ -81,80 +87,27 @@
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordCreates>
     <recordLookups>
-        <description>Get the Installment record created by FinDock related to the Gift Transaction created in the previous element.</description>
-        <name>getInstallment</name>
-        <label>getInstallment</label>
+        <description>get the Gift Transaction that was just created so that the confirmation screen displays Name.</description>
+        <name>getGiftTransaction</name>
+        <label>getGiftTransaction</label>
         <locationX>176</locationX>
         <locationY>458</locationY>
-        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>takePayment</targetReference>
+            <targetReference>screenConfirmation</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
-            <field>fdff__GiftTransaction__c</field>
+            <field>Id</field>
             <operator>EqualTo</operator>
             <value>
                 <elementReference>createGiftTransaction</elementReference>
             </value>
         </filters>
-        <object>cpm__Installment__c</object>
-        <outputReference>varRec_Installment</outputReference>
-        <queriedFields>Id</queriedFields>
-        <queriedFields>cpm__Account__c</queriedFields>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>GiftTransaction</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
-    <screens>
-        <name>Confirm</name>
-        <label>Confirm Information</label>
-        <locationX>176</locationX>
-        <locationY>350</locationY>
-        <allowBack>false</allowBack>
-        <allowFinish>true</allowFinish>
-        <allowPause>false</allowPause>
-        <connector>
-            <targetReference>getInstallment</targetReference>
-        </connector>
-        <fields>
-            <name>confirmInfo</name>
-            <fieldText>&lt;p&gt;&lt;strong style=&quot;font-size: 16px;&quot;&gt;Confirm Gift Transaction Details&lt;/strong&gt;&lt;/p&gt;</fieldText>
-            <fieldType>DisplayText</fieldType>
-        </fields>
-        <fields>
-            <name>Confirm_Section1</name>
-            <fieldType>RegionContainer</fieldType>
-            <fields>
-                <name>Confirm_Section1_Column1</name>
-                <fieldType>Region</fieldType>
-                <fields>
-                    <name>ConfirmInformation</name>
-                    <fieldText>&lt;p&gt;&lt;strong&gt;Donor: &lt;/strong&gt;{!varRec_DonorPersonAccount.FirstName} {!varRec_DonorPersonAccount.LastName}&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Amount:&lt;/strong&gt; {!Donation_Amount}&lt;/p&gt;</fieldText>
-                    <fieldType>DisplayText</fieldType>
-                </fields>
-                <inputParameters>
-                    <name>width</name>
-                    <value>
-                        <stringValue>6</stringValue>
-                    </value>
-                </inputParameters>
-                <isRequired>false</isRequired>
-            </fields>
-            <fields>
-                <name>Confirm_Section1_Column2</name>
-                <fieldType>Region</fieldType>
-                <inputParameters>
-                    <name>width</name>
-                    <value>
-                        <stringValue>6</stringValue>
-                    </value>
-                </inputParameters>
-                <isRequired>false</isRequired>
-            </fields>
-            <isRequired>false</isRequired>
-            <regionContainerType>SectionWithoutHeader</regionContainerType>
-        </fields>
-        <showFooter>true</showFooter>
-        <showHeader>false</showHeader>
-    </screens>
     <screens>
         <name>screenAmount</name>
         <label>Process Donation</label>
@@ -219,6 +172,76 @@
             <isRequired>false</isRequired>
             <regionContainerType>SectionWithoutHeader</regionContainerType>
         </fields>
+        <fields>
+            <name>screenAmount_Section2</name>
+            <fieldType>RegionContainer</fieldType>
+            <fields>
+                <name>screenAmount_Section2_Column1</name>
+                <fieldType>Region</fieldType>
+                <fields>
+                    <name>lookupCampaign</name>
+                    <extensionName>flowruntime:lookup</extensionName>
+                    <fieldType>ComponentInstance</fieldType>
+                    <inputParameters>
+                        <name>fieldApiName</name>
+                        <value>
+                            <stringValue>CampaignId</stringValue>
+                        </value>
+                    </inputParameters>
+                    <inputParameters>
+                        <name>label</name>
+                        <value>
+                            <stringValue>Campaign</stringValue>
+                        </value>
+                    </inputParameters>
+                    <inputParameters>
+                        <name>objectApiName</name>
+                        <value>
+                            <stringValue>GiftTransaction</stringValue>
+                        </value>
+                    </inputParameters>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+                    <isRequired>true</isRequired>
+                    <storeOutputAutomatically>true</storeOutputAutomatically>
+                </fields>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>6</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <fields>
+                <name>screenAmount_Section2_Column2</name>
+                <fieldType>Region</fieldType>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>6</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <isRequired>false</isRequired>
+            <regionContainerType>SectionWithoutHeader</regionContainerType>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <name>screenConfirmation</name>
+        <label>screenConfirmation</label>
+        <locationX>176</locationX>
+        <locationY>566</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>displayConfirmation</name>
+            <fieldText>&lt;p&gt;&lt;strong&gt;&lt;em&gt;{!getGiftTransaction.Name} &lt;/em&gt;was created and payment has been processed&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
         <showFooter>true</showFooter>
         <showHeader>false</showHeader>
     </screens>
@@ -226,10 +249,46 @@
         <name>takePayment</name>
         <label>Take Payment</label>
         <locationX>176</locationX>
-        <locationY>566</locationY>
+        <locationY>350</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
+        <connector>
+            <targetReference>getGiftTransaction</targetReference>
+        </connector>
+        <fields>
+            <name>takePayment_Section1</name>
+            <fieldType>RegionContainer</fieldType>
+            <fields>
+                <name>takePayment_Section1_Column1</name>
+                <fieldType>Region</fieldType>
+                <fields>
+                    <name>displayGiftInfo</name>
+                    <fieldText>&lt;p&gt;&lt;strong&gt;Donor: &lt;/strong&gt;{!varRec_DonorPersonAccount.FirstName} {!varRec_DonorPersonAccount.LastName}&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Campaign: &lt;/strong&gt;{!lookupCampaign.recordName}&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Amount:&lt;/strong&gt; {!Donation_Amount}&lt;/p&gt;</fieldText>
+                    <fieldType>DisplayText</fieldType>
+                </fields>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>6</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <fields>
+                <name>takePayment_Section1_Column2</name>
+                <fieldType>Region</fieldType>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>6</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <isRequired>false</isRequired>
+            <regionContainerType>SectionWithoutHeader</regionContainerType>
+        </fields>
         <fields>
             <name>findockMOTO</name>
             <extensionName>cpm:findockPayment</extensionName>
@@ -237,7 +296,7 @@
             <inputParameters>
                 <name>recordId</name>
                 <value>
-                    <stringValue>{!varRec_Installment.Id}</stringValue>
+                    <stringValue>{!createGiftTransaction}</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
@@ -274,6 +333,11 @@
     </start>
     <status>Active</status>
     <textTemplates>
+        <name>text_GiftTransactionLink</name>
+        <isViewedAsPlainText>false</isViewedAsPlainText>
+        <text>&lt;p&gt;https://&lt;span style=&quot;color: rgb(68, 68, 68); background-color: rgb(255, 255, 255);&quot;&gt;{!$Organization}&lt;/span&gt;.develop.lightning.force.com/lightning/r/GiftTransaction/{!getGiftTransaction.Id}/view&lt;/p&gt;</text>
+    </textTemplates>
+    <textTemplates>
         <name>text_GiftTransactionName</name>
         <isViewedAsPlainText>true</isViewedAsPlainText>
         <text>{!varRec_DonorPersonAccount.LastName}, {!varRec_DonorPersonAccount.FirstName} - ${!Donation_Amount}</text>
@@ -285,13 +349,5 @@
         <isInput>true</isInput>
         <isOutput>false</isOutput>
         <objectType>Account</objectType>
-    </variables>
-    <variables>
-        <name>varRec_Installment</name>
-        <dataType>SObject</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <objectType>cpm__Installment__c</objectType>
     </variables>
 </Flow>
